@@ -1,0 +1,26 @@
+server:
+  port: 9011
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  application:
+    name: brainco-service-bus
+  cloud:
+    bus:
+      refresh:
+        enabled: true
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        tags: BUS
+        instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh, health

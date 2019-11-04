@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: brainco-service-auth
+  redis:
+    host: localhost
+    port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: password
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      enabled: true
+      discovery:
+        tags: AUTH
+        instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        health-check-path: /auth/actuator/health
+  datasource:
+    name: brainco-cloud
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/brainrobotics_cloud # Note the database name
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: update
+  sendgrid:
+    api-key: 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
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9098/auth/.well-known/jwks.json
+server:
+  port: 9098
+  servlet:
+    context-path: /auth
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.http.server: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+security:
+  oauth2:
+    client:
+      clientId: auth-service
+      clientSecret: auth-service-secret
+      accessTokenUri: http://localhost:9098/auth/oauth/token
+      grant-type: client_credentials
+      scope: server
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 60000
+
